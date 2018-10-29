@@ -40,35 +40,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mButton = (Button) findViewById(R.id.button);
-        mEdit = (EditText) findViewById(R.id.numerosText);
-        output = (TextView) findViewById(R.id.textView2);
-        incluirHistoria = (CheckBox)  findViewById(R.id.checkBox);
+        mButton = findViewById(R.id.button);
+        mEdit = findViewById(R.id.numerosText);
+        output = findViewById(R.id.textView2);
+        incluirHistoria = findViewById(R.id.checkBox);
 
         output.setVisibility(View.GONE);
         output.setMovementMethod(new ScrollingMovementMethod());
 
         String finalHistorialJugadas = historialJugadas;
-        mButton.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View view) {
-                        Log.v("EditText", mEdit.getText().toString());
-                        mEdit.setVisibility(View.GONE);
-                        mButton.setVisibility(View.GONE);
-                        incluirHistoria.setVisibility(View.GONE);
-                        output.setVisibility(View.VISIBLE);
-
-                        String jugadas;
-                        if(incluirHistoria.isChecked()){
-                            jugadas = finalHistorialJugadas + mEdit.getText().toString();
-                        }else{
-                            jugadas = mEdit.getText().toString();
-                        }
-                        Ruleta ruleta = new Ruleta();
-                        String resultado = ruleta.calcularResultado(jugadas);
-                        output.setText(Html.fromHtml(resultado, Html.FROM_HTML_MODE_LEGACY));
-                    }
-                });
+        mButton.setOnClickListener( view -> calcularEstadisticas(view, finalHistorialJugadas));
     }
 
     @Override
@@ -78,6 +59,23 @@ public class MainActivity extends AppCompatActivity {
         incluirHistoria.setVisibility(View.VISIBLE);
         output.setVisibility(View.GONE);
         output.setText("");
+    }
+
+    private void calcularEstadisticas(View view, String finalHistorialJugadas){
+        mEdit.setVisibility(View.GONE);
+        mButton.setVisibility(View.GONE);
+        incluirHistoria.setVisibility(View.GONE);
+        output.setVisibility(View.VISIBLE);
+
+        String jugadas;
+        if(incluirHistoria.isChecked()){
+            jugadas = finalHistorialJugadas + mEdit.getText().toString();
+        }else{
+            jugadas = mEdit.getText().toString();
+        }
+        Ruleta ruleta = new Ruleta();
+        String resultado = ruleta.calcularResultado(jugadas);
+        output.setText(Html.fromHtml(resultado, Html.FROM_HTML_MODE_LEGACY));
     }
 
     private String convertStreamToString(InputStream is) throws Exception {
