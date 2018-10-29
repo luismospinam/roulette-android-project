@@ -1,6 +1,6 @@
-package com.example.luis.ruleta;
+package com.example.luis.ruleta.modelo;
 
-import java.text.DecimalFormat;
+import com.example.luis.ruleta.utilitario.Constantes;
 
 public class Estadistica {
 
@@ -43,12 +43,10 @@ public class Estadistica {
     }
 
     public String toString() {
-        DecimalFormat df2 = new DecimalFormat(".##");
-
         StringBuilder builder = new StringBuilder();
         builder.append("Numero: ").append(String.format("%1$2s", numero)).append(" - ")
                 .append("Cayó: ").append(String.format("%1$2s", vecesCayo)).append(" veces - ")
-                .append("Porcentaje: ").append(df2.format(porcentaje)).append("%");
+                .append("Porcentaje: ").append(Constantes.DOS_DECIMALES_FORMAT.format(porcentaje)).append("%");
 
         return builder.toString();
     }

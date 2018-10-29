@@ -1,6 +1,8 @@
-package com.example.luis.ruleta;
+package com.example.luis.ruleta.logica;
 
-import java.text.DecimalFormat;
+import com.example.luis.ruleta.modelo.Estadistica;
+import com.example.luis.ruleta.utilitario.Constantes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,9 +12,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Ruleta {
+import static com.example.luis.ruleta.utilitario.Constantes.SALTO_LINEA;
 
-    public static DecimalFormat df2 = new DecimalFormat(".##");
+public class Ruleta {
     private int ganancias;
     private int cantidadNumerosJugar;
     private List<String> numerosJugar = new ArrayList<>();
@@ -39,7 +41,7 @@ public class Ruleta {
                 numerosDespues.merge(numeros.get(i + 1), 1, Integer::sum);
         }
 
-        mensaje += "Numero total de bolas: " + cantidad + "\n";
+        mensaje += "Numero total de bolas: " + cantidad + SALTO_LINEA;
         LinkedHashMap orderMap = mapa.entrySet().stream()
                 .map(entry -> entry.getValue())
                 .sorted(Comparator.comparingInt(Estadistica::getVecesCayo).reversed())
@@ -49,27 +51,27 @@ public class Ruleta {
                         }, LinkedHashMap::new));
 
         StringBuilder resultadoEstadistica = new StringBuilder();
-        orderMap.forEach((k, v) -> resultadoEstadistica.append(v).append("\n"));
+        orderMap.forEach((k, v) -> resultadoEstadistica.append(v).append(SALTO_LINEA));
         mensaje += resultadoEstadistica.toString();
 
         //System.out.println("ANTES del: " + ultimoNumero + " son: " + numerosAnteriores);
-        mensaje += "DESP. del: " + ultimoNumero + ": " + imprimirMapaNumerosAnterioresDespues(numerosDespues);
+        mensaje += SALTO_LINEA + "DESP. del: " + ultimoNumero + ": " + imprimirMapaNumerosAnterioresDespues(numerosDespues);
 
         calcularCuantoJugar(orderMap, cantidad);
 
         mensaje += new StringBuilder()
-                .append("\n\nPara maximizar las ganacias se deben jugar: " + cantidadNumerosJugar
+                .append(SALTO_LINEA + SALTO_LINEA + "Para maximizar las ganacias se deben jugar: " + cantidadNumerosJugar
                         + " numeros ")
-                .append(" los cuales son: \n" + numerosJugar + "\n")
+                .append(" los cuales son: " + SALTO_LINEA + numerosJugar + SALTO_LINEA)
                 .append("con una ganancia de " + ganancias + " fichas en total ")
-                .append("con un porcentaje por turno de " + df2.format(porcentajeAcumulado) + "%")
+                .append("con un porcentaje por turno de " + Constantes.DOS_DECIMALES_FORMAT.format(porcentajeAcumulado) + "%")
                 .toString();
 
         return mensaje;
     }
 
     private Estadistica calcularEstadistica(String numeroString, int cantidad,
-                                                   Map<String, Estadistica> mapa) {
+                                            Map<String, Estadistica> mapa) {
         Estadistica estadistica = mapa.get(numeroString);
         double vecesCayo = estadistica.aumentarVecesCayo();
 
@@ -117,10 +119,19 @@ public class Ruleta {
     private String imprimirMapaNumerosAnterioresDespues(Map<String, Integer> mapa) {
         String mensaje = "{";
         for (Map.Entry<String, Integer> entrada : mapa.entrySet()) {
-            if (entrada.getValue() > 0) {
-                mensaje += entrada.getKey() + "=" + entrada.getValue() + " ";
-            } else {
-                mensaje += entrada.getKey() + "X ";
+            if (entrada.getValue() == 1) {
+                mensaje += "<font color=\"#d2d2d2\">" + entrada.getKey() + "</font>";
+            } else if(entrada.getValue() == 2){
+                mensaje += "<font color=\"#b1afaf\">" + entrada.getKey() + "</font>";
+            } else if(entrada.getValue() == 3){
+                mensaje += "<font color=\"#8a8989\">" + entrada.getKey() + "</font>";
+            } else if(entrada.getValue() == 4){
+                mensaje += "<font color=\"#676767\">" + entrada.getKey() + "</font>";
+            } else if(entrada.getValue() > 4){
+                mensaje += "<font color=\"#000000\">" + entrada.getKey() + "</font>";
+            }
+            else {
+                mensaje += "-";
             }
         }
         mensaje += "}";

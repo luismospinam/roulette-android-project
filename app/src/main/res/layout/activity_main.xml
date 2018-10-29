@@ -26,7 +26,8 @@
         android:clickable="true"
         android:ems="10"
         android:focusable="true"
-        android:inputType="textLongMessage"
+        android:inputType="number"
+        android:digits="0123456789,"
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteY="120dp" />
 
