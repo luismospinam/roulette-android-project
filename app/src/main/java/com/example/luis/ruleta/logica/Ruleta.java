@@ -15,6 +15,8 @@ import java.util.stream.IntStream;
 import static com.example.luis.ruleta.utilitario.Constantes.SALTO_LINEA;
 
 public class Ruleta {
+    public static String NUMEROS_VALIDOS_ORDENADOS = "00,1,13,36,24,3,15,34,22,5,17,32,20,7,11,30,26,9,28,0,2,14,35,23,4,16,33,21,6,18,31,19,8,12,29,25,10,27";
+
     private int ganancias;
     private int cantidadNumerosJugar;
     private List<String> numerosJugar = new ArrayList<>();
@@ -109,8 +111,8 @@ public class Ruleta {
 
     private LinkedHashMap<String, Integer> llenarMapaOrdenRuleta() {
         LinkedHashMap<String, Integer> mapa = new LinkedHashMap<>();
-        String orden = "00,1,13,36,24,3,15,34,22,5,17,32,20,7,11,30,26,9,28,0,2,14,35,23,4,16,33,21,6,18,31,19,8,12,29,25,10,27";
-        for (String numero : orden.split(",")) {
+
+        for (String numero : NUMEROS_VALIDOS_ORDENADOS.split(",")) {
             mapa.put(numero, 0);
         }
         return mapa;
