@@ -5,11 +5,17 @@ import com.example.luis.ruleta.utilitario.Constantes;
 public class Estadistica {
 
     private String numero;
+    private Secciones.Color color;
+    private Secciones.Paridad paridad;
+    private Secciones.Docena docena;
     private int vecesCayo;
     private double porcentaje;
 
     public Estadistica(String numero) {
         this.numero = numero;
+        this.color = Secciones.Color.calcularColor(numero);
+        this.paridad = Secciones.Paridad.calcularParidad(numero);
+        this.docena = Secciones.Docena.calcularDocena(numero);
     }
 
     public String getNumero(){
@@ -36,6 +42,17 @@ public class Estadistica {
         this.porcentaje = porcentaje;
     }
 
+    public Secciones.Color getColor() {
+        return color;
+    }
+
+    public Secciones.Paridad getParidad() {
+        return paridad;
+    }
+
+    public Secciones.Docena getDocena() {
+        return docena;
+    }
 
     public int aumentarVecesCayo() {
         this.vecesCayo += 1;

@@ -1,7 +1,7 @@
 package com.example.luis.ruleta.logica;
 
 import com.example.luis.ruleta.modelo.Estadistica;
-import com.example.luis.ruleta.utilitario.Constantes;
+import com.example.luis.ruleta.modelo.Secciones;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,15 +12,29 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.example.luis.ruleta.utilitario.Constantes.DOS_DECIMALES_FORMAT;
 import static com.example.luis.ruleta.utilitario.Constantes.SALTO_LINEA;
 
 public class Ruleta {
     public static String NUMEROS_VALIDOS_ORDENADOS = "00,1,13,36,24,3,15,34,22,5,17,32,20,7,11,30,26,9,28,0,2,14,35,23,4,16,33,21,6,18,31,19,8,12,29,25,10,27";
+    public static String NUMEROS_ROJOS = "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36";
+    public static String NUMEROS_NEGROS = "2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35";
 
     private int ganancias;
     private int cantidadNumerosJugar;
     private List<String> numerosJugar = new ArrayList<>();
     private double porcentajeAcumulado = 0;
+
+    private int bolasRojas;
+    private int bolasNegras;
+
+    private int numeroPares;
+    private int numerosImpares;
+
+    private int numerosPrimerDocena;
+    private int numerosSegundaDocena;
+    private int numerosTerceraDocena;
+
     private String ultimoNumero;
     private Map<String, Integer> numerosAnteriores = llenarMapaOrdenRuleta();
     private Map<String, Integer> numerosDespues = llenarMapaOrdenRuleta();
@@ -37,6 +51,27 @@ public class Ruleta {
             String numeroActual = numeros.get(i);
             Estadistica estadistica = calcularEstadistica(numeroActual, cantidad, mapa);
             mapa.put(numeroActual, estadistica);
+
+            if (Secciones.Color.NEGRO.equals(estadistica.getColor()))
+                bolasNegras++;
+            if (Secciones.Color.ROJO.equals(estadistica.getColor()))
+                bolasRojas++;
+
+            if (Secciones.Paridad.PAR.equals(estadistica.getParidad()))
+                numeroPares++;
+            if (Secciones.Paridad.IMPAR.equals(estadistica.getParidad()))
+                numerosImpares++;
+
+            if (Secciones.Docena.PRIMERA.equals(estadistica.getDocena())) {
+                numerosPrimerDocena++;
+            }
+            if (Secciones.Docena.SEGUNDA.equals(estadistica.getDocena())) {
+                numerosSegundaDocena++;
+            }
+            if (Secciones.Docena.TERCERA.equals(estadistica.getDocena())) {
+                numerosTerceraDocena++;
+            }
+
             if (numeroActual.equals(ultimoNumero) && i > 0)
                 numerosAnteriores.merge(numeros.get(i - 1), 1, Integer::sum);
             if (numeroActual.equals(ultimoNumero) && i < numeros.size() - 1)
@@ -56,8 +91,21 @@ public class Ruleta {
         orderMap.forEach((k, v) -> resultadoEstadistica.append(v).append(SALTO_LINEA));
         mensaje += resultadoEstadistica.toString();
 
-        //System.out.println("ANTES del: " + ultimoNumero + " son: " + numerosAnteriores);
         mensaje += SALTO_LINEA + "DESP. del: " + ultimoNumero + ": " + imprimirMapaNumerosAnterioresDespues(numerosDespues);
+
+        mensaje += SALTO_LINEA;
+        mensaje += SALTO_LINEA + "ROJO: " + bolasRojas + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) bolasRojas * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA + "NEGRO: " + bolasNegras + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) bolasNegras * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA;
+
+        mensaje += SALTO_LINEA + "IMPARES: " + numerosImpares + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) numerosImpares * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA + "PARES: " + numeroPares + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) numeroPares * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA;
+
+        mensaje += SALTO_LINEA + "PRIMER DOCENA: " + numerosPrimerDocena + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) numerosPrimerDocena * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA + "SEGUNDA DOCENA: " + numerosSegundaDocena + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) numerosSegundaDocena * 100 / cantidad) + "%";
+        mensaje += SALTO_LINEA + "TERCER DOCENA: " + numerosTerceraDocena + " porcentaje: " + DOS_DECIMALES_FORMAT.format((double) numerosTerceraDocena * 100 / cantidad) + "%";
+
 
         calcularCuantoJugar(orderMap, cantidad);
 
@@ -66,7 +114,7 @@ public class Ruleta {
                         + " numeros ")
                 .append(" los cuales son: " + SALTO_LINEA + numerosJugar + SALTO_LINEA)
                 .append("con una ganancia de " + ganancias + " fichas en total ")
-                .append("con un porcentaje por turno de " + Constantes.DOS_DECIMALES_FORMAT.format(porcentajeAcumulado) + "%")
+                .append("con un porcentaje por turno de " + DOS_DECIMALES_FORMAT.format(porcentajeAcumulado) + "%")
                 .toString();
 
         return mensaje;
@@ -123,16 +171,15 @@ public class Ruleta {
         for (Map.Entry<String, Integer> entrada : mapa.entrySet()) {
             if (entrada.getValue() == 1) {
                 mensaje += "<font color=\"#d2d2d2\">" + entrada.getKey() + "</font>";
-            } else if(entrada.getValue() == 2){
+            } else if (entrada.getValue() == 2) {
                 mensaje += "<font color=\"#b1afaf\">" + entrada.getKey() + "</font>";
-            } else if(entrada.getValue() == 3){
+            } else if (entrada.getValue() == 3) {
                 mensaje += "<font color=\"#8a8989\">" + entrada.getKey() + "</font>";
-            } else if(entrada.getValue() == 4){
+            } else if (entrada.getValue() == 4) {
                 mensaje += "<font color=\"#676767\">" + entrada.getKey() + "</font>";
-            } else if(entrada.getValue() > 4){
+            } else if (entrada.getValue() > 4) {
                 mensaje += "<font color=\"#000000\">" + entrada.getKey() + "</font>";
-            }
-            else {
+            } else {
                 mensaje += "-";
             }
         }
