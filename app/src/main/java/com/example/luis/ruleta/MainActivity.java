@@ -3,31 +3,40 @@ package com.example.luis.ruleta;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.luis.ruleta.logica.Ruleta;
 import com.example.luis.ruleta.logica.RuletaValidador;
 import com.example.luis.ruleta.modelo.MensajeValidacion;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.example.luis.ruleta.utilitario.ArchivoUtilitario;
 
 public class MainActivity extends AppCompatActivity {
+
+    private boolean archivoEncontrado;
+
+    private String historialJugadasTotal;
+    private String historialJugadasFlaquita;
+    private String historialJugadasGordita;
+
+    private String numerosBolaFlaquita = "";
+    private String numerosBolaGordita = "";
 
     private Button mButton;
     private EditText mEdit;
     private TextView output;
     private CheckBox incluirHistoria;
-    private boolean archivoEncontrado;
+    private RadioButton radioButtonFlaquitas;
+    private RadioButton radioButtonGorditas;
+    private RadioButton radioButtonHistorial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +47,18 @@ public class MainActivity extends AppCompatActivity {
         mEdit = findViewById(R.id.numerosText);
         output = findViewById(R.id.textView2);
         incluirHistoria = findViewById(R.id.checkBox);
+        radioButtonFlaquitas = findViewById(R.id.radio_flaquita);
+        radioButtonGorditas = findViewById(R.id.radio_gordita);
+        radioButtonHistorial = findViewById(R.id.radio_historial_total);
+
+        mEdit.addTextChangedListener(listenerTextEditNumerosCambio());
 
         System.out.println(getExternalCacheDir());
 
-        String historialJugadas = "";
         try {
-            historialJugadas = getStringFromFile(getExternalCacheDir() + "/jugadas-ruleta.txt");
+            historialJugadasTotal = ArchivoUtilitario.getStringFromFile(getExternalCacheDir() + "/jugadas-ruleta-historial-total.txt");
+            historialJugadasFlaquita = ArchivoUtilitario.getStringFromFile(getExternalCacheDir() + "/jugadas-ruleta-flaquita.txt");
+            historialJugadasGordita = ArchivoUtilitario.getStringFromFile(getExternalCacheDir() + "/jugadas-ruleta-gordita.txt");
             archivoEncontrado = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,33 +72,25 @@ public class MainActivity extends AppCompatActivity {
         output.setVisibility(View.GONE);
         output.setMovementMethod(new ScrollingMovementMethod());
 
-        String finalHistorialJugadas = historialJugadas;
-        mButton.setOnClickListener(view -> calcularEstadisticas(view, finalHistorialJugadas));
+        mButton.setOnClickListener(view -> calcularEstadisticas(view));
     }
 
-    @Override
-    public void onBackPressed() {
-        if (archivoEncontrado) {
-            incluirHistoria.setVisibility(View.VISIBLE);
-        }
-        mEdit.setVisibility(View.VISIBLE);
-        mButton.setVisibility(View.VISIBLE);
-        output.setVisibility(View.GONE);
-        output.setText("");
-    }
-
-    private void calcularEstadisticas(View view, String finalHistorialJugadas) {
+    private void calcularEstadisticas(View view) {
         mEdit.setVisibility(View.GONE);
         mButton.setVisibility(View.GONE);
         incluirHistoria.setVisibility(View.GONE);
         output.setVisibility(View.VISIBLE);
+        radioButtonGorditas.setVisibility(View.GONE);
+        radioButtonFlaquitas.setVisibility(View.GONE);
+        radioButtonHistorial.setVisibility(View.GONE);
 
+        String HistorialJugadas = obtenerHistorialSegunRadioButton();
         String jugadasHoy = mEdit.getText().toString();
         MensajeValidacion validacionHoy = RuletaValidador.validarStringJugadas(jugadasHoy);
         if (validacionHoy.isValido()) {
             String jugadas = "";
             if (archivoEncontrado && incluirHistoria.isChecked()) {
-                jugadas = finalHistorialJugadas + jugadasHoy;
+                jugadas = HistorialJugadas + jugadasHoy;
             } else {
                 jugadas = jugadasHoy;
             }
@@ -100,6 +107,88 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String obtenerHistorialSegunRadioButton() {
+        String historial = "";
+
+        if (radioButtonFlaquitas.isChecked()) {
+            historial += historialJugadasFlaquita;
+        } else if (radioButtonGorditas.isChecked()) {
+            historial += historialJugadasGordita;
+        } else if (radioButtonHistorial.isChecked()) {
+            historial += historialJugadasGordita  + historialJugadasFlaquita + historialJugadasTotal;
+            if(!numerosBolaGordita.isEmpty()){
+                historial += numerosBolaGordita + ",";
+            }
+            if(!numerosBolaFlaquita.isEmpty()){
+                historial += numerosBolaFlaquita + ",";
+            }
+        }
+
+        return historial;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (archivoEncontrado) {
+            incluirHistoria.setVisibility(View.VISIBLE);
+        }
+        radioButtonGorditas.setVisibility(View.VISIBLE);
+        radioButtonFlaquitas.setVisibility(View.VISIBLE);
+        radioButtonHistorial.setVisibility(View.VISIBLE);
+        mEdit.setVisibility(View.VISIBLE);
+        mButton.setVisibility(View.VISIBLE);
+        output.setVisibility(View.GONE);
+        output.setText("");
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.radio_flaquita:
+                if (checked)
+                    mEdit.setText(this.numerosBolaFlaquita);
+                mEdit.setEnabled(true);
+                break;
+            case R.id.radio_gordita:
+                if (checked)
+                    mEdit.setText(this.numerosBolaGordita);
+                mEdit.setEnabled(true);
+                break;
+            case R.id.radio_historial_total:
+                if (checked)
+                    mEdit.setText("");
+                mEdit.setEnabled(false);
+                incluirHistoria.setChecked(true);
+                break;
+        }
+    }
+
+    private TextWatcher listenerTextEditNumerosCambio() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                appendListaNumerosSegunRadioBox(s.toString());
+            }
+        };
+    }
+
+    private void appendListaNumerosSegunRadioBox(String texto) {
+        if (radioButtonFlaquitas.isChecked()) {
+            this.numerosBolaFlaquita = texto;
+        } else if (radioButtonGorditas.isChecked()) {
+            this.numerosBolaGordita = texto;
+        }
+    }
+
     private void mostrarPopupMensaje(String mensaje) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(mensaje);
@@ -110,24 +199,5 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-    }
-
-    private String convertStreamToString(InputStream is) throws Exception {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append(",");
-        }
-        reader.close();
-        return sb.toString();
-    }
-
-    private String getStringFromFile(String filePath) throws Exception {
-        File fl = new File(filePath);
-        FileInputStream fin = new FileInputStream(fl);
-        String ret = convertStreamToString(fin);
-        fin.close();
-        return ret;
     }
 }

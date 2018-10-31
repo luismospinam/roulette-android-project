@@ -20,16 +20,16 @@
 
     <EditText
         android:id="@+id/numerosText"
-        android:layout_width="361dp"
-        android:layout_height="252dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="347dp"
+        android:layout_height="325dp"
         android:clickable="true"
+        android:digits="0123456789,"
         android:ems="10"
         android:focusable="true"
         android:inputType="number"
-        android:digits="0123456789,"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="120dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="75dp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -37,19 +37,54 @@
         android:layout_height="fill_parent"
         android:scrollbars="vertical"
         app:layout_constraintTop_toTopOf="@+id/numerosText"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="57dp" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="145dp"
-        android:layout_height="63dp"
+        android:layout_height="37dp"
         android:layout_marginTop="60dp"
+        android:checked="true"
         android:clickable="true"
         android:focusableInTouchMode="false"
         android:text="Incluir Historia"
-        android:checked="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/numerosText"
         app:layout_constraintStart_toStartOf="@+id/numerosText"
         app:layout_constraintTop_toBottomOf="@+id/numerosText" />
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="349dp"
+        android:layout_height="34dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/checkBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numerosText">
+
+        <RadioButton
+            android:id="@+id/radio_flaquita"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonClicked"
+            android:text="Flaquita" />
+
+        <RadioButton
+            android:id="@+id/radio_gordita"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonClicked"
+            android:text="Gordita" />
+
+        <RadioButton
+            android:id="@+id/radio_historial_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonClicked"
+            android:text="Historia Total" />
+    </RadioGroup>
 
 </android.support.constraint.ConstraintLayout>
