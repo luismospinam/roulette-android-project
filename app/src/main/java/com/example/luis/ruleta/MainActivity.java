@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonGorditas = findViewById(R.id.radio_gordita);
         radioButtonHistorial = findViewById(R.id.radio_historial_total);
 
+        radioButtonHistorial.setChecked(true);
         mEdit.addTextChangedListener(listenerTextEditNumerosCambio());
 
         System.out.println(getExternalCacheDir());

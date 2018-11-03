@@ -123,9 +123,15 @@ public class Ruleta {
     private Estadistica calcularEstadistica(String numeroString, int cantidad,
                                             Map<String, Estadistica> mapa) {
         Estadistica estadistica = mapa.get(numeroString);
-        double vecesCayo = estadistica.aumentarVecesCayo();
 
-        estadistica.setPorcentaje(vecesCayo * 100 / cantidad);
+        try {
+            System.out.println("Estadisticas Numero: " + numeroString);
+            double vecesCayo = estadistica.aumentarVecesCayo();
+
+            estadistica.setPorcentaje(vecesCayo * 100 / cantidad);
+        }catch(Exception e){
+            throw new RuntimeException("error al calcular numero " + numeroString, e);
+        }
 
         return estadistica;
     }
