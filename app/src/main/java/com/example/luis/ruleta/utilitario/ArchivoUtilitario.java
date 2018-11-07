@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArchivoUtilitario {
 
@@ -25,6 +27,15 @@ public class ArchivoUtilitario {
         String ret = convertStreamToString(fin);
         fin.close();
         return ret;
+    }
+
+    public static List<String> orderenarListaNumerosString(List<String> lista){
+        return lista.stream()
+                .map(s -> s.equals("00") ? -1 : Integer.valueOf(s))
+                .sorted()
+                .map(i -> i.equals(-1) ? "00" : i.toString())
+                .collect(Collectors.toList());
+
     }
 
 }

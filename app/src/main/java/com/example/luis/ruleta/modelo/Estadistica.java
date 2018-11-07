@@ -61,7 +61,7 @@ public class Estadistica {
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Numero: ").append(String.format("%1$2s", numero)).append(" - ")
+        builder.append("No: ").append(String.format("%1$2s", numero)).append(" - ")
                 .append("Cayó: ").append(String.format("%1$2s", vecesCayo)).append(" veces - ")
                 .append("Porcentaje: ").append(Constantes.DOS_DECIMALES_FORMAT.format(porcentaje)).append("%");
 

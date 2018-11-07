@@ -194,5 +194,7 @@ public class Ruleta {
         return mensaje;
     }
 
-
+    public List<String> getNumerosJugar() {
+        return numerosJugar;
+    }
 }

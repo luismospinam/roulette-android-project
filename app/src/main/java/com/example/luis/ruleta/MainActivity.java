@@ -28,11 +28,14 @@ public class MainActivity extends AppCompatActivity {
     private String historialJugadasGordita;
 
     private String numerosBolaFlaquita = "";
+    private String numerosHistoricosAJugarFlaquita = "";
     private String numerosBolaGordita = "";
+    private String numerosHistoricosAJugarGordita = "";
 
     private Button mButton;
     private EditText mEdit;
     private TextView output;
+    private TextView numerosJugarTextView;
     private CheckBox incluirHistoria;
     private RadioButton radioButtonFlaquitas;
     private RadioButton radioButtonGorditas;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonFlaquitas = findViewById(R.id.radio_flaquita);
         radioButtonGorditas = findViewById(R.id.radio_gordita);
         radioButtonHistorial = findViewById(R.id.radio_historial_total);
+        numerosJugarTextView = findViewById(R.id.numeroJugar);
 
         radioButtonHistorial.setChecked(true);
         mEdit.addTextChangedListener(listenerTextEditNumerosCambio());
@@ -68,12 +72,24 @@ public class MainActivity extends AppCompatActivity {
 
         if (!archivoEncontrado) {
             incluirHistoria.setVisibility(View.GONE);
+        } else {
+            calcularNumerosJugarHistorial();
         }
 
         output.setVisibility(View.GONE);
         output.setMovementMethod(new ScrollingMovementMethod());
 
         mButton.setOnClickListener(view -> calcularEstadisticas(view));
+    }
+
+    private void calcularNumerosJugarHistorial() {
+        Ruleta flaquita = new Ruleta();
+        flaquita.calcularResultado(historialJugadasFlaquita);
+        numerosHistoricosAJugarFlaquita = ArchivoUtilitario.orderenarListaNumerosString(flaquita.getNumerosJugar()).toString();
+
+        Ruleta gordita = new Ruleta();
+        gordita.calcularResultado(historialJugadasGordita);
+        numerosHistoricosAJugarGordita = ArchivoUtilitario.orderenarListaNumerosString(gordita.getNumerosJugar()).toString();
     }
 
     private void calcularEstadisticas(View view) {
@@ -84,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonGorditas.setVisibility(View.GONE);
         radioButtonFlaquitas.setVisibility(View.GONE);
         radioButtonHistorial.setVisibility(View.GONE);
+        numerosJugarTextView.setVisibility(View.GONE);
 
         String HistorialJugadas = obtenerHistorialSegunRadioButton();
         String jugadasHoy = mEdit.getText().toString();
@@ -116,11 +133,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (radioButtonGorditas.isChecked()) {
             historial += historialJugadasGordita;
         } else if (radioButtonHistorial.isChecked()) {
-            historial += historialJugadasGordita  + historialJugadasFlaquita + historialJugadasTotal;
-            if(!numerosBolaGordita.isEmpty()){
+            historial += historialJugadasGordita + historialJugadasFlaquita + historialJugadasTotal;
+            if (!numerosBolaGordita.isEmpty()) {
                 historial += numerosBolaGordita + ",";
             }
-            if(!numerosBolaFlaquita.isEmpty()){
+            if (!numerosBolaFlaquita.isEmpty()) {
                 historial += numerosBolaFlaquita + ",";
             }
         }
@@ -138,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonHistorial.setVisibility(View.VISIBLE);
         mEdit.setVisibility(View.VISIBLE);
         mButton.setVisibility(View.VISIBLE);
+        numerosJugarTextView.setVisibility(View.VISIBLE);
         output.setVisibility(View.GONE);
         output.setText("");
     }
@@ -147,20 +165,26 @@ public class MainActivity extends AppCompatActivity {
 
         switch (view.getId()) {
             case R.id.radio_flaquita:
-                if (checked)
+                if (checked) {
                     mEdit.setText(this.numerosBolaFlaquita);
-                mEdit.setEnabled(true);
+                    mEdit.setEnabled(true);
+                    numerosJugarTextView.setText(numerosHistoricosAJugarFlaquita);
+                }
                 break;
             case R.id.radio_gordita:
-                if (checked)
+                if (checked) {
                     mEdit.setText(this.numerosBolaGordita);
-                mEdit.setEnabled(true);
+                    mEdit.setEnabled(true);
+                    numerosJugarTextView.setText(numerosHistoricosAJugarGordita);
+                }
                 break;
             case R.id.radio_historial_total:
-                if (checked)
+                if (checked) {
                     mEdit.setText("");
-                mEdit.setEnabled(false);
-                incluirHistoria.setChecked(true);
+                    mEdit.setEnabled(false);
+                    incluirHistoria.setChecked(true);
+                    numerosJugarTextView.setText("");
+                }
                 break;
         }
     }
