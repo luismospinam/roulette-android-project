@@ -14,10 +14,14 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.example.luis.ruleta.logica.GananciasCorrida;
 import com.example.luis.ruleta.logica.Ruleta;
 import com.example.luis.ruleta.logica.RuletaValidador;
 import com.example.luis.ruleta.modelo.MensajeValidacion;
 import com.example.luis.ruleta.utilitario.ArchivoUtilitario;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,14 +32,17 @@ public class MainActivity extends AppCompatActivity {
     private String historialJugadasGordita;
 
     private String numerosBolaFlaquita = "";
-    private String numerosHistoricosAJugarFlaquita = "";
+    private List<String> numerosHistoricosAJugarFlaquita = new ArrayList<>();
     private String numerosBolaGordita = "";
-    private String numerosHistoricosAJugarGordita = "";
+    private List<String>  numerosHistoricosAJugarGordita = new ArrayList<>();
+
+    private String gananciasAcumuladas = "";
 
     private Button mButton;
     private EditText mEdit;
     private TextView output;
     private TextView numerosJugarTextView;
+    private TextView gananciasTextView;
     private CheckBox incluirHistoria;
     private RadioButton radioButtonFlaquitas;
     private RadioButton radioButtonGorditas;
@@ -54,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonGorditas = findViewById(R.id.radio_gordita);
         radioButtonHistorial = findViewById(R.id.radio_historial_total);
         numerosJugarTextView = findViewById(R.id.numeroJugar);
+        gananciasTextView = findViewById(R.id.ganancias);
 
         radioButtonHistorial.setChecked(true);
         mEdit.addTextChangedListener(listenerTextEditNumerosCambio());
@@ -85,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
     private void calcularNumerosJugarHistorial() {
         Ruleta flaquita = new Ruleta();
         flaquita.calcularResultado(historialJugadasFlaquita);
-        numerosHistoricosAJugarFlaquita = ArchivoUtilitario.orderenarListaNumerosString(flaquita.getNumerosJugar()).toString();
+        numerosHistoricosAJugarFlaquita = ArchivoUtilitario.orderenarListaNumerosString(flaquita.getNumerosJugar());
 
         Ruleta gordita = new Ruleta();
         gordita.calcularResultado(historialJugadasGordita);
-        numerosHistoricosAJugarGordita = ArchivoUtilitario.orderenarListaNumerosString(gordita.getNumerosJugar()).toString();
+        numerosHistoricosAJugarGordita = ArchivoUtilitario.orderenarListaNumerosString(gordita.getNumerosJugar());
     }
 
     private void calcularEstadisticas(View view) {
@@ -101,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         radioButtonFlaquitas.setVisibility(View.GONE);
         radioButtonHistorial.setVisibility(View.GONE);
         numerosJugarTextView.setVisibility(View.GONE);
+        gananciasTextView.setVisibility(View.GONE);
 
         String HistorialJugadas = obtenerHistorialSegunRadioButton();
         String jugadasHoy = mEdit.getText().toString();
@@ -156,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
         mEdit.setVisibility(View.VISIBLE);
         mButton.setVisibility(View.VISIBLE);
         numerosJugarTextView.setVisibility(View.VISIBLE);
+        gananciasTextView.setVisibility(View.VISIBLE);
         output.setVisibility(View.GONE);
         output.setText("");
     }
@@ -168,14 +178,14 @@ public class MainActivity extends AppCompatActivity {
                 if (checked) {
                     mEdit.setText(this.numerosBolaFlaquita);
                     mEdit.setEnabled(true);
-                    numerosJugarTextView.setText(numerosHistoricosAJugarFlaquita);
+                    numerosJugarTextView.setText(numerosHistoricosAJugarFlaquita.toString());
                 }
                 break;
             case R.id.radio_gordita:
                 if (checked) {
                     mEdit.setText(this.numerosBolaGordita);
                     mEdit.setEnabled(true);
-                    numerosJugarTextView.setText(numerosHistoricosAJugarGordita);
+                    numerosJugarTextView.setText(numerosHistoricosAJugarGordita.toString());
                 }
                 break;
             case R.id.radio_historial_total:
@@ -202,8 +212,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 appendListaNumerosSegunRadioBox(s.toString());
+                calcularGanancias(s.toString());
             }
         };
+    }
+
+    private void calcularGanancias(String s) {
+        try {
+            if(s != null && !s.isEmpty() && RuletaValidador.validarStringJugadas(s).isValido()) {
+                if (radioButtonFlaquitas.isChecked()) {
+                    int ganancias = GananciasCorrida.calcularGanancias(this.numerosHistoricosAJugarFlaquita, s);
+                    this.gananciasTextView.setText("Ganancias de: " + ganancias);
+                } else if (radioButtonGorditas.isChecked()) {
+                    int ganancias = GananciasCorrida.calcularGanancias(this.numerosHistoricosAJugarGordita, s);
+                    this.gananciasTextView.setText("Ganancias de: " + ganancias);
+                }
+            } else{
+                this.gananciasTextView.setText("");
+            }
+        }
+         catch(Exception e){
+             this.gananciasTextView.setText("Error al calcular las ganancias: " + e.getMessage());
+        }
     }
 
     private void appendListaNumerosSegunRadioBox(String texto) {
