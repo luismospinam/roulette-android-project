@@ -1,7 +1,6 @@
 package com.example.http_server_andoid
 
 import android.os.Bundle
-import android.text.Html
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -28,7 +27,11 @@ import io.ktor.util.pipeline.PipelineContext
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val PORT = 8099;
+        const val PORT = 8099
+
+        const val SEPARADOR_DIA: String = "-"
+        const val SEPARADOR_JUGADAS: String = ","
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,14 +65,13 @@ class MainActivity : AppCompatActivity() {
         {
             call.respondText(
                 """
-                            <form method="post">
+                            <form method="post" style="text-align: center;">
                              <div>
-                                <label for="say"> Ingrese los numeros </label>
-                                <textarea name="numbers" id="numbers" value="Hi" rows="10"></textarea>
+                                <textarea name="numbers" id="numbers" rows="12" style="width: 65%;font-size: 28px;"></textarea>
                              </div>
-    
+   
                               <div>
-                                <input type="submit" value="Send">
+                                <input type="submit" value="Send" style="width: 500px;height: 80px;">
                               </div>
                             </form>
                         """.trimIndent(), ContentType.Text.Html
@@ -84,8 +86,8 @@ class MainActivity : AppCompatActivity() {
                 .replace("%2C", ",")
                 .replace("%0D%0A", "")
 
-            val validacionHoy: MensajeValidacion = RuletaValidador.validarStringJugadas(numbers)
-            if (validacionHoy.isValido()) {
+            val validacionInput: MensajeValidacion = RuletaValidador.validarStringJugadas(numbers)
+            if (validacionInput.isValido()) {
                 val jugadas = numbers
 
                 if (jugadas != "") {
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     call.respondText(resultado, ContentType.Text.Html)
                 }
             } else {
-                call.respondText(validacionHoy.mensaje, ContentType.Text.Html)
+                call.respondText(validacionInput.mensaje, ContentType.Text.Html)
             }
         }
 }
