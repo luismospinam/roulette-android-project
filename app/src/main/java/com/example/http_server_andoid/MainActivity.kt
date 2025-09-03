@@ -65,15 +65,155 @@ class MainActivity : AppCompatActivity() {
         {
             call.respondText(
                 """
-                            <form method="post" style="text-align: center;">
-                             <div>
-                                <textarea name="numbers" id="numbers" rows="12" style="width: 65%;font-size: 28px;"></textarea>
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                    <title>Number Processor</title>
+                    <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+                        
+                        .container {
+                            background: rgba(255, 255, 255, 0.95);
+                            backdrop-filter: blur(10px);
+                            border-radius: 20px;
+                            padding: 30px;
+                            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                            width: 100%;
+                            max-width: 400px;
+                            text-align: center;
+                        }
+                        
+                        .title {
+                            color: #333;
+                            font-size: 24px;
+                            font-weight: 600;
+                            margin-bottom: 20px;
+                            letter-spacing: -0.5px;
+                        }
+                        
+                        .form-group {
+                            margin-bottom: 25px;
+                        }
+                        
+                        .textarea-container {
+                            position: relative;
+                        }
+                        
+                        textarea {
+                            width: 100%;
+                            min-height: 200px;
+                            padding: 15px;
+                            border: 2px solid #e1e5e9;
+                            border-radius: 12px;
+                            font-size: 16px;
+                            font-family: inherit;
+                            resize: vertical;
+                            transition: all 0.3s ease;
+                            background: #fff;
+                            line-height: 1.5;
+                        }
+                        
+                        textarea:focus {
+                            outline: none;
+                            border-color: #667eea;
+                            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                        }
+                        
+                        .submit-btn {
+                            width: 100%;
+                            padding: 16px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            font-size: 18px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            letter-spacing: 0.5px;
+                        }
+                        
+                        .submit-btn:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+                        }
+                        
+                        .submit-btn:active {
+                            transform: translateY(0);
+                        }
+                        
+                        .placeholder-text {
+                            color: #999;
+                            font-size: 14px;
+                            margin-top: 8px;
+                            line-height: 1.4;
+                        }
+                        
+                        @media (max-width: 480px) {
+                            .container {
+                                padding: 20px;
+                                margin: 10px;
+                            }
+                            
+                            .title {
+                                font-size: 20px;
+                            }
+                            
+                            textarea {
+                                min-height: 150px;
+                                font-size: 16px;
+                            }
+                            
+                            .submit-btn {
+                                font-size: 16px;
+                                padding: 14px;
+                            }
+                        }
+                        
+                        @media (max-width: 375px) {
+                            .container {
+                                padding: 15px;
+                            }
+                            
+                            .title {
+                                font-size: 18px;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1 class="title">Number Processor</h1>
+                        <form method="post">
+                            <div class="form-group">
+                                <div class="textarea-container">
+                                    <textarea name="numbers" id="numbers" placeholder="Enter your numbers here..."></textarea>
+                                </div>
+                                <div class="placeholder-text">
+                                    Enter numbers separated by commas or line breaks
                              </div>
-   
-                              <div>
-                                <input type="submit" value="Send" style="width: 500px;height: 80px;">
                               </div>
+                            <button type="submit" class="submit-btn">Process Numbers</button>
                             </form>
+                    </div>
+                </body>
+                </html>
                         """.trimIndent(), ContentType.Text.Html
             )
         }
@@ -94,10 +234,108 @@ class MainActivity : AppCompatActivity() {
                     val ruleta = Ruleta()
                     val resultado: String = ruleta.calcularResultado(jugadas)
 
-                    call.respondText(resultado, ContentType.Text.Html)
+                    call.respondText("""
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                            <style>
+                                body {
+                                    margin: 0;
+                                    padding: 20px 20px 100px 20px;
+                                    font-family: Arial, sans-serif;
+                                    min-height: 100vh;
+                                    box-sizing: border-box;
+                                }
+                                .container {
+                                    max-width: 100%;
+                                }
+                                .result {
+                                    font-size: 16px;
+                                    margin: 20px 0;
+                                    word-wrap: break-word;
+                                    text-align: left;
+                                }
+                                .button {
+                                    display: inline-block;
+                                    padding: 12px 24px;
+                                    background-color: #007bff;
+                                    color: white;
+                                    text-decoration: none;
+                                    border-radius: 5px;
+                                    font-size: 16px;
+                                    margin-top: 20px;
+                                }
+                                .button-container {
+                                    text-align: center;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <p class="result">$resultado</p>
+                                <div class="button-container">
+                                    <a href="/" class="button">Process More Numbers</a>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                    """.trimIndent(), ContentType.Text.Html)
                 }
             } else {
-                call.respondText(validacionInput.mensaje, ContentType.Text.Html)
+                call.respondText("""
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                        <style>
+                            body {
+                                margin: 0;
+                                padding: 20px 20px 100px 20px;
+                                font-family: Arial, sans-serif;
+                                min-height: 100vh;
+                                box-sizing: border-box;
+                            }
+                            .container {
+                                max-width: 100%;
+                            }
+                            .error {
+                                font-size: 18px;
+                                margin: 20px 0;
+                                color: red;
+                                word-wrap: break-word;
+                                text-align: left;
+                            }
+                            .button {
+                                display: inline-block;
+                                padding: 12px 24px;
+                                background-color: #007bff;
+                                color: white;
+                                text-decoration: none;
+                                border-radius: 5px;
+                                font-size: 16px;
+                                margin-top: 20px;
+                            }
+                            .button-container {
+                                text-align: center;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h2>Error:</h2>
+                            <p class="error">${validacionInput.mensaje}</p>
+                            <div class="button-container">
+                                <a href="/" class="button">Try Again</a>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                """.trimIndent(), ContentType.Text.Html)
             }
         }
+
+    
 }

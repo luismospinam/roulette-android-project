@@ -62,7 +62,6 @@ public class Ruleta {
     private final Map<String, Pair<AtomicInteger, AtomicInteger>> mapaEstadisticasModulosConPuertas = inicializarMapaModulos();
     private final Map<String, Pair<AtomicInteger, AtomicInteger>> mapaEstadisticasModulosSinPuertas = inicializarMapaModulos();
     private final Map<String, List<String>> mapaNumeroModulosPuertas = inicializarMapaModulosPuertas(mapaEstadisticasModulosConPuertas);
-
     private final Set<String> setNumerosAJugar = new LinkedHashSet<>();
 
 
